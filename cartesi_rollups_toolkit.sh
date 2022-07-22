@@ -119,6 +119,10 @@ show_help() {
 	echo -e "\t${C_H_ARG}-y, deploy${NC}"
 	echo -e "\t\t${C_H_UC}Deploys the dapp.${NC}"
 	echo
+	echo -e "\t${C_H_ARG}--hint${NC}"
+	echo -e "\t\tOnly shows command used to execute specified task without actually executing it."
+	echo -e "\t\tWorks with: build, start, stop, restart"
+	echo
 	echo -e "\t${C_H_ARG}--ei, env-init${NC}"
 	echo -e "\t\tInitializes host mode for the dapp by creating virtual environment and installing the required libraries."
 	echo -e "\t\t${C_H_NOTE}Python only.${NC}"
@@ -316,7 +320,9 @@ task_title() {
 
 exec_cmd() {
 	echo -e "${C_LBL_RUN}$ $1${NC}"
-	$1
+	if [ $ARG_HINT == 0 ]; then
+		$1
+	fi
 }
 
 dapp_build() {
@@ -395,6 +401,7 @@ ARG_OP_STOP=0
 ARG_OP_RESTART=0
 ARG_OP_ENV_INIT=0
 ARG_OP_ENV_RUN=0
+ARG_HINT=0
 ARG_MODE_ROLLUPS=""
 
 POSITIONAL_ARGS=()
@@ -470,6 +477,10 @@ while [[ $# -gt 0 ]]; do
 			;;
 		--er|"env-run")
 			ARG_OP_ENV_RUN=1
+			shift # past argument
+			;;
+		--hint)
+			ARG_HINT=1
 			shift # past argument
 			;;
 		-*|--*)
