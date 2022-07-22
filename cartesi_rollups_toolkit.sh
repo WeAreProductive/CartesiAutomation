@@ -296,6 +296,87 @@ uninstall() {
 	fi
 }
 
+# dapp operations
+
+verify_rollups_mode() {
+	if [ "$ARG_MODE_ROLLUPS" != "host" ] && [ "$ARG_MODE_ROLLUPS" != "prod" ]; then
+		echo -e "${C_ERR2}Invalid mode!${NC} Supported modes are '${C_LBL_MODE}host${NC}' and '${C_LBL_MODE}prod${NC}'.${NC}"
+		exit
+	fi
+}
+
+task_title() {
+	echo -e "$LOGO_SIGN0"; echo -e "${LOGO_SIGN1}${C_LBL_CMD}$1${NC}";
+}
+
+exec_cmd() {
+	echo -e "${C_LBL_RUN}$ $1${NC}"
+	$1
+}
+
+dapp_build() {
+	task_title "Building dapp..."
+	if [ $DAPP_ISEXAMPLE = 1 ]; then
+		cmd="docker buildx bake --load"
+		#docker buildx bake --load
+	else
+		cmd="docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load"
+		#docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load
+	fi
+	exec_cmd "$cmd"
+}
+
+dapp_start() {
+	verify_rollups_mode
+	#echo -e "$LOGO_SIGN0"; echo -e "${LOGO_SIGN1}${C_LBL_CMD}Starting dapp in ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode...${NC}";
+	task_title "Starting dapp in ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode..."
+	if [ $DAPP_ISEXAMPLE = 1 ]; then
+		if [ $ARG_MODE_ROLLUPS = "host" ]; then
+			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml -f ../docker-compose-host.yml up"
+		fi
+		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
+			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml up"
+		fi
+	else
+		if [ $ARG_MODE_ROLLUPS = "host" ]; then
+			cmd="docker compose -f ./docker-compose.yml -f ./docker-compose.override.yml -f ./docker-compose-host.yml up"
+		fi
+		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
+			cmd="docker compose up"
+		fi	
+	fi
+	exec_cmd "$cmd"
+}
+
+dapp_stop() {
+	verify_rollups_mode
+	task_title "Stopping dapp from ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode...${NC}"
+	if [ $DAPP_ISEXAMPLE = 1 ]; then
+		if [ $ARG_MODE_ROLLUPS = "host" ]; then
+			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml -f ../docker-compose-host.yml down -v"
+		fi
+		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
+			cmd="docker-compose -f ../docker-compose.yml -f ./docker-compose.override.yml down -v"
+		fi
+	else
+		if [ $ARG_MODE_ROLLUPS = "host" ]; then
+			cmd="docker compose -f ./docker-compose.yml -f ./docker-compose.override.yml -f ./docker-compose-host.yml down -v"
+		fi
+		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
+			cmd="docker compose down -v"
+		fi	
+	fi
+	exec_cmd "$cmd"
+}
+
+# virtual env tasks
+only_python() {
+	if [ $DAPP_LANG != "python" ]; then
+		echo -e "${C_ERR2}This operation is supported only for dapps written in Pythoin!${NC}"
+		exit
+	fi
+}
+
 #operations flags
 ARG_OP_HELP=0
 ARG_OP_VER=0
@@ -308,13 +389,6 @@ ARG_OP_STOP=0
 ARG_OP_ENV_INIT=0
 ARG_OP_ENV_RUN=0
 ARG_MODE_ROLLUPS=""
-
-verify_rollups_mode() {
-	if [ "$ARG_MODE_ROLLUPS" != "host" ] && [ "$ARG_MODE_ROLLUPS" != "prod" ]; then
-		echo -e "${C_ERR2}Invalid mode!${NC} Supported modes are '${C_LBL_MODE}host${NC}' and '${C_LBL_MODE}prod${NC}'.${NC}"
-		exit
-	fi
-}
 
 POSITIONAL_ARGS=()
 
@@ -429,13 +503,6 @@ if [ $ARG_OP_VER = 1 ]; then
 	exit
 fi
 
-only_python() {
-	if [ $DAPP_LANG != "python" ]; then
-		echo -e "${C_ERR2}This operation is supported only for dapps written in Pythoin!${NC}"
-		exit
-	fi
-}
-
 # Operation: Init host mode
 if [ $ARG_OP_ENV_INIT = 1 ]; then
 	echo -e "$LOGO_SIGN0"; echo -e "${LOGO_SIGN1}${C_LBL_CMD}Initializing environement and installing requirements...${NC}";
@@ -484,16 +551,7 @@ fi
 
 # Operation: Build dapp (example and custom)
 if [ $ARG_OP_BUILD = 1 ]; then
-	echo -e "$LOGO_SIGN0"; echo -e "${LOGO_SIGN1}${C_LBL_CMD}Building dapp...${NC}";
-	if [ $DAPP_ISEXAMPLE = 1 ]; then
-		cmd="docker buildx bake --load"
-		#docker buildx bake --load
-	else
-		cmd="docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load"
-		#docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load
-	fi
-	echo -e "${C_LBL_RUN}$ $cmd${NC}"
-	$cmd
+	dapp_build
 	exit
 fi
 
@@ -504,48 +562,12 @@ fi
 
 # Operation: Start dapp (example and custom, host and prod modes)
 if [ $ARG_OP_START = 1 ]; then
-	verify_rollups_mode
-	echo -e "$LOGO_SIGN0"; echo -e "${LOGO_SIGN1}${C_LBL_CMD}Starting dapp in ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode...${NC}";
-	if [ $DAPP_ISEXAMPLE = 1 ]; then
-		if [ $ARG_MODE_ROLLUPS = "host" ]; then
-			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml -f ../docker-compose-host.yml up"
-		fi
-		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
-			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml up"
-		fi
-	else
-		if [ $ARG_MODE_ROLLUPS = "host" ]; then
-			cmd="docker compose -f ./docker-compose.yml -f ./docker-compose.override.yml -f ./docker-compose-host.yml up"
-		fi
-		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
-			cmd="docker compose up"
-		fi	
-	fi
-	echo -e "${C_LBL_RUN}$ $cmd${NC}"
-	$cmd
+	dapp_start
 	exit
 fi
 
 # Operation: Stop dapp (example and custom, host and prod modes)
 if [ $ARG_OP_STOP = 1 ]; then
-	verify_rollups_mode
-	echo -e "$LOGO_SIGN0"; echo -e "${LOGO_SIGN1}${C_LBL_CMD}Stopping dapp from ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode...${NC}";
-	if [ $DAPP_ISEXAMPLE = 1 ]; then
-		if [ $ARG_MODE_ROLLUPS = "host" ]; then
-			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml -f ../docker-compose-host.yml down -v"
-		fi
-		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
-			cmd="docker-compose -f ../docker-compose.yml -f ./docker-compose.override.yml down -v"
-		fi
-	else
-		if [ $ARG_MODE_ROLLUPS = "host" ]; then
-			cmd="docker compose -f ./docker-compose.yml -f ./docker-compose.override.yml -f ./docker-compose-host.yml down -v"
-		fi
-		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
-			cmd="docker compose down -v"
-		fi	
-	fi
-	echo -e "${C_LBL_RUN}$ $cmd${NC}"
-	$cmd
+	dapp_stop
 	exit
 fi
