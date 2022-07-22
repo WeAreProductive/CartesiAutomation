@@ -99,6 +99,11 @@ show_help() {
 	echo -e "\t\tStops the rollup from 'host' or 'prod' mode."
 	echo -e "\t\t${C_H_NOTE}The mode needs to be specified using the -m argument.$NC"
 	echo
+	echo -e "\t${C_H_ARG}-r, restart${NC}"
+	echo -e "\t\tRestarts the rollup by stopping and then starting."
+	echo -e "\t\tAlso works if both 'stop' and 'start' arguments are provided."
+	echo -e "\t\t${C_H_NOTE}The mode needs to be specified using the -m argument.$NC"
+	echo
 	echo -e "\t${C_H_ARG}-m, --mode${NC}"
 	echo -e "\t\tSpecifies in what mode the dapp will run. Supported modes are 'host' and 'prod'."
 	echo
@@ -350,7 +355,7 @@ dapp_start() {
 
 dapp_stop() {
 	verify_rollups_mode
-	task_title "Stopping dapp from ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode...${NC}"
+	task_title "Stopping dapp from ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode..."
 	if [ $DAPP_ISEXAMPLE = 1 ]; then
 		if [ $ARG_MODE_ROLLUPS = "host" ]; then
 			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml -f ../docker-compose-host.yml down -v"
@@ -369,6 +374,7 @@ dapp_stop() {
 	exec_cmd "$cmd"
 }
 
+
 # virtual env tasks
 only_python() {
 	if [ $DAPP_LANG != "python" ]; then
@@ -386,6 +392,7 @@ ARG_OP_BUILD=0
 ARG_OP_DEPLOY=0
 ARG_OP_START=0
 ARG_OP_STOP=0
+ARG_OP_RESTART=0
 ARG_OP_ENV_INIT=0
 ARG_OP_ENV_RUN=0
 ARG_MODE_ROLLUPS=""
@@ -451,6 +458,10 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-d|"down"|"stop")
 			ARG_OP_STOP=1
+			shift # past argument
+			;;
+		-r|"restart")
+			ARG_OP_RESTART=1
 			shift # past argument
 			;;
 		--ei|"env-init")
@@ -557,6 +568,14 @@ fi
 
 if [ $ARG_OP_DEPLOY = 1 ]; then
 	# TODO: 
+	exit
+fi
+
+# Operation: Stop dapp (example and custom, host and prod modes)
+if [[ $ARG_OP_RESTART = 1  ||  ( $ARG_OP_START = 1  &&  $ARG_OP_STOP = 1 ) ]]; then
+	task_title "Restarting dapp..."
+	dapp_stop
+	dapp_start
 	exit
 fi
 
