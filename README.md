@@ -17,7 +17,7 @@ Before using the script it must be installed with this command:
 chomd +x cartesi_rollups_toolkit.sh
 ```
 
-After installation this script to operate in any directory. It is set as alias and can be called by typing
+After installation this script can operate in any directory. It is set as alias and it can be called by typing
 ```shell
 crt
 ```
