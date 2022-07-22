@@ -82,7 +82,7 @@ show_help() {
 	echo -e "\t\tAlsow shows the current version of docker and if it meets the minimum requirements."
 	echo
 	echo -e "\t${C_H_ARG}install${NC}"
-	echo -e "\t\tAllows this script to operate in any directory. It is set as alias and can be called by typing '$SCRIPT_ALIAS_CMD'"
+	echo -e "\t\tAllows this script to operate in any directory. It is set as alias and it can be called by typing '$SCRIPT_ALIAS_CMD'"
 	echo -e "\t\tNote: Installation will take effect in newly opened shells."
 	echo
 	echo -e "\t${C_H_ARG}uninstall${NC}"
