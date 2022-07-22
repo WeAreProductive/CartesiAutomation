@@ -17,7 +17,8 @@ Before using the script it must be installed with this command:
 ./cartesi_rollups_toolkit.sh install
 ```
 Close the current console window and then reopen it.
-*Note: The installation updates ~~.bashrc~~ file so the console window must be reopened for the changes to take effect.*
+
+*Note: The installation updates __.bashrc__ file so the console window must be reopened for the changes to take effect.*
 
 After installation is complete this script can operate in any directory. It is set as alias and it can be called by typing
 ```shell
