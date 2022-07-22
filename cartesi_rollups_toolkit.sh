@@ -121,7 +121,7 @@ show_help() {
 	echo
 	echo -e "\t${C_H_ARG}--hint${NC}"
 	echo -e "\t\tOnly shows command used to execute specified task without actually executing it."
-	echo -e "\t\tWorks with: build, start, stop, restart"
+	echo -e "\t\tWorks with: build, start, stop, restart, env-init"
 	echo
 	echo -e "\t${C_H_ARG}--ei, env-init${NC}"
 	echo -e "\t\tInitializes host mode for the dapp by creating virtual environment and installing the required libraries."
@@ -389,6 +389,19 @@ only_python() {
 	fi
 }
 
+env_init() {
+	task_title "Initializing environement and installing requirements..."
+	only_python
+	if [ -d ".env" ] && [ $ARG_HINT == 0 ]; then
+		echo -e "${C_ERR2}Environment already initialized!${NC}"
+	else
+		exec_cmd "python3 -m venv .env"
+		exec_cmd ". .env/bin/activate"
+		exec_cmd "pip install -r requirements.txt"
+		exec_cmd "deactivate"
+	fi
+}
+
 #operations flags
 ARG_OP_HELP=0
 ARG_OP_VER=0
@@ -527,16 +540,7 @@ fi
 
 # Operation: Init host mode
 if [ $ARG_OP_ENV_INIT = 1 ]; then
-	echo -e "$LOGO_SIGN0"; echo -e "${LOGO_SIGN1}${C_LBL_CMD}Initializing environement and installing requirements...${NC}";
-	only_python
-	if [ -d ".env" ]; then
-		echo -e "${C_ERR2}Environment already initialized!${NC}"
-	else
-		python3 -m venv .env
-		. .env/bin/activate
-		pip install -r requirements.txt
-		deactivate
-	fi
+	env_init
 	exit
 fi
 
