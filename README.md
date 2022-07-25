@@ -59,7 +59,7 @@ Shows help page.
 
 **-v, --version**  
 Shows version and information about the dapp located in current directory.
-Alsow shows the current version of docker and if it meets the minimum requirements.
+Also shows the current version of docker and if it meets the minimum requirements.
 
 **install**  
 Allows this script to operate in any directory. It is set as alias and it can be called by typing 'crt'
