@@ -54,80 +54,63 @@ Only shows the command used to run the build tasks without actually executing it
 
 ## Arguments
 
-**-h, --help**
-
+**-h, --help**  
 Shows this help page.
 
-**-v, --version**
-
+**-v, --version**  
 Shows version and information about the dapp located in current directory.
 Alsow shows the current version of docker and if it meets the minimum requirements.
 
-**install**
-
+**install**  
 Allows this script to operate in any directory. It is set as alias and it can be called by typing 'crt'
 Note: Installation will take effect in newly opened shells.
 
-~~**uninstall**~~
-
+~~**uninstall**~~  
 *(not yet available) - Remove the alias to this script.*
 
-**-b, build**
-
+**-b, build**  
 Builds the dapp.
 
-**-u, up, start**
-
+**-u, up, start**  
 Starts the rollup in 'host' or 'prod' mode.
 Note: The mode needs to be specified using the -m argument.
 
-**-d, down, stop**
-
+**-d, down, stop**  
 Stops the rollup from 'host' or 'prod' mode.
 Note: The mode needs to be specified using the -m argument.
 
-**-r, restart**
-
+**-r, restart**  
 Restarts the rollup by stopping and then starting.
 Also works if both 'stop' and 'start' arguments are provided.
 Note: The mode needs to be specified using the -m argument.
 
-**-m, --mode**
-
+**-m, --mode**  
 Specifies in what mode the dapp will run. Supported modes are 'host' and 'prod'.
 
-**host**
+**host**  
+Same as '-m host'  
 
-Same as '-m host'
-
-**prod, production**
-
+**prod, production**  
 Same as '-m prod'
 
-~~**-c, create**~~
-
+~~**-c, create**~~  
 *(not yet available) - Creates new dapp at current directory.*
 
-~~**-y, deploy**~~
-
+~~**-y, deploy**~~  
 *(not yet available) - Deploys the dapp.*
 
-**--hint**
-
+**--hint**  
 Only shows command used to execute specified task without actually executing it.
 Works with: build, start, stop, restart, env-init
 
-**-l, --log**
-
+**-l, --log**  
 Creates log file with the ouput of the executed task. Log files are located in directory /logs.
 Works with: build, start, stop, restart
 Note: The executed command is piped to 'tee', so it outputs both on the screen and in a log file.
 
-**--ei, env-init**
-
+**--ei, env-init**  
 Initializes host mode for the dapp by creating virtual environment and installing the required libraries.
 Note: Python only.
 
-**--er, env-run**
-
+**--er, env-run**  
 *(in development, still some issues) - Runs the dapp in virtual environment when the rollup operates in host mode.*
