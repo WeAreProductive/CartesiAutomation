@@ -349,17 +349,14 @@ dapp_build() {
 	task_title "Building dapp..."
 	if [ $DAPP_ISEXAMPLE = 1 ]; then
 		cmd="docker buildx bake --load"
-		#docker buildx bake --load
 	else
 		cmd="docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load"
-		#docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load
 	fi
 	exec_cmd "$cmd" "build"
 }
 
 dapp_start() {
 	verify_rollups_mode
-	#echo -e "$LOGO_SIGN0"; echo -e "${LOGO_SIGN1}${C_LBL_CMD}Starting dapp in ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode...${NC}";
 	task_title "Starting dapp in ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode..."
 	if [ $DAPP_ISEXAMPLE = 1 ]; then
 		if [ $ARG_MODE_ROLLUPS = "host" ]; then
