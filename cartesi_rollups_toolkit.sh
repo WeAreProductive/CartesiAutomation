@@ -123,6 +123,11 @@ show_help() {
 	echo -e "\t\tOnly shows command used to execute specified task without actually executing it."
 	echo -e "\t\tWorks with: build, start, stop, restart, env-init"
 	echo
+	echo -e "\t${C_H_ARG}-l, --log${NC}"
+	echo -e "\t\tCreates log file with the ouput of the executed task. Log files are located in directory /logs."
+	echo -e "\t\tWorks with: build, start, stop, restart"
+	echo -e "\t\tNote: The executed command is piped to 'tee', so it outputs both on the screen and in a log file."
+	echo
 	echo -e "\t${C_H_ARG}--ei, env-init${NC}"
 	echo -e "\t\tInitializes host mode for the dapp by creating virtual environment and installing the required libraries."
 	echo -e "\t\t${C_H_NOTE}Python only.${NC}"
@@ -318,10 +323,25 @@ task_title() {
 	echo -e "$LOGO_SIGN0"; echo -e "${LOGO_SIGN1}${C_LBL_CMD}$1${NC}";
 }
 
+exec_cmd_piped() {
+	$1 | $2
+}
+
 exec_cmd() {
 	echo -e "${C_LBL_RUN}$ $1${NC}"
 	if [ $ARG_HINT == 0 ]; then
-		$1
+		# create log if specified so
+		if [ $ARG_LOG == 1 ] && [ ! -z $2 ]; then
+			__dirlogs="logs"
+			if [ ! -d $__dirlogs ]; then mkdir $__dirlogs; fi;
+			__timestamp=$(date +%Y%m%d,%H%M,%S)
+			__logfile="log-$__timestamp-$2.log"
+			# execute the command piped to "tee" logger
+			exec_cmd_piped "$1" "tee $__dirlogs/$__logfile"
+		else
+			# execute the command
+			$1
+		fi
 	fi
 }
 
@@ -334,7 +354,7 @@ dapp_build() {
 		cmd="docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load"
 		#docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load
 	fi
-	exec_cmd "$cmd"
+	exec_cmd "$cmd" "build"
 }
 
 dapp_start() {
@@ -356,7 +376,7 @@ dapp_start() {
 			cmd="docker compose up"
 		fi	
 	fi
-	exec_cmd "$cmd"
+	exec_cmd "$cmd" "start,$ARG_MODE_ROLLUPS"
 }
 
 dapp_stop() {
@@ -377,7 +397,7 @@ dapp_stop() {
 			cmd="docker compose down -v"
 		fi	
 	fi
-	exec_cmd "$cmd"
+	exec_cmd "$cmd" "stop,$ARG_MODE_ROLLUPS"
 }
 
 
@@ -455,6 +475,7 @@ ARG_OP_RESTART=0
 ARG_OP_ENV_INIT=0
 ARG_OP_ENV_RUN=0
 ARG_HINT=0
+ARG_LOG=0
 ARG_MODE_ROLLUPS=""
 
 POSITIONAL_ARGS=()
@@ -534,6 +555,10 @@ while [[ $# -gt 0 ]]; do
 			;;
 		--hint)
 			ARG_HINT=1
+			shift # past argument
+			;;
+		-l|--log)
+			ARG_LOG=1
 			shift # past argument
 			;;
 		-*|--*)
