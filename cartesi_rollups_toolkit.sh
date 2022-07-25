@@ -350,7 +350,7 @@ dapp_build() {
 	if [ $DAPP_ISEXAMPLE = 1 ]; then
 		cmd="docker buildx bake --load"
 	else
-		cmd="docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load"
+		cmd="docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl machine --load"
 	fi
 	exec_cmd "$cmd" "build"
 }
