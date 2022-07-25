@@ -41,3 +41,14 @@ Starts the rollup in production mode.
 crt host stop
 ```
 Stops the rollup from host mode.
+
+```shell
+crt host start --log
+```
+Starts the rollup in host mode and also writes the output to a log file.
+
+```shell
+crt build --hint
+```
+Only shows the command used to run the build tasks without actually executing it.
+
