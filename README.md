@@ -55,7 +55,7 @@ Only shows the command used to run the build tasks without actually executing it
 ## Arguments
 
 **-h, --help**  
-Shows this help page.
+Shows help page.
 
 **-v, --version**  
 Shows version and information about the dapp located in current directory.
