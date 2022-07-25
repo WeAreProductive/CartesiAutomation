@@ -402,6 +402,46 @@ env_init() {
 	fi
 }
 
+run() {
+	# TODO: Still some issues
+	python3 $DAPP_STARTUP_POINT
+	#. .env/bin/activate
+	#${ARG_ENV_ADDR} python3 ${DAPP_STARTUP_POINT}
+	#echo 'ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 $DAPP_STARTUP_POINT'
+	#python3 $DAPP_STARTUP_POINT
+	#deactivate
+}
+
+env_run() {
+	task_title "Starting dapp in environment..."
+	only_python
+	if [ ! -d ".env" ] && [ $ARG_HINT == 0 ]; then
+		echo -e "${C_ERR2}Environment not initialized!${NC} Use '$SCRIPT_ALIAS_CMD --ei' to initialize it."
+	else
+		ARG_ENV_ADDR="ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\""
+		#exec_cmd "$ARG_ENV_ADDR python3 $DAPP_STARTUP_POINT"
+		exec_cmd "./__run.sh"
+		#exec_cmd ". .env/bin/activate"
+		#exec_cmd "export ${ARG_ENV_ADDR}"
+		#exec_cmd "echo ${ARG_ENV_ADDR}"
+		#exec_cmd "python3 ${DAPP_STARTUP_POINT}"
+		#exec_cmd "deactivate"
+
+		# TODO: Still some issues
+		#ARG_ENV_ADDR="ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\""
+
+		#cmd="${ARG_ENV_ADDR} python3 ${DAPP_STARTUP_POINT}"
+		#echo -e "${C_LBL_RUN}$ $cmd${NC}"
+		#run
+
+		#. .env/bin/activate
+		##$cmd
+		##${ARG_ENV_ADDR} python3 ${DAPP_STARTUP_POINT}
+		#ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 $DAPP_STARTUP_POINT
+		#deactivate
+	fi
+}
+
 #operations flags
 ARG_OP_HELP=0
 ARG_OP_VER=0
@@ -544,34 +584,9 @@ if [ $ARG_OP_ENV_INIT = 1 ]; then
 	exit
 fi
 
-run() {
-	# TODO: Still some issues
-	python3 $DAPP_STARTUP_POINT
-	#. .env/bin/activate
-	#${ARG_ENV_ADDR} python3 ${DAPP_STARTUP_POINT}
-	#echo 'ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 $DAPP_STARTUP_POINT'
-	#python3 $DAPP_STARTUP_POINT
-	#deactivate
-}
-
 # Operation: Run host mode
 if [ $ARG_OP_ENV_RUN = 1 ]; then
-	echo -e "$LOGO_SIGN0"; echo -e "${LOGO_SIGN1}${C_LBL_CMD}Starting dapp in environment...${NC}";
-	only_python
-	if [ ! -d ".env" ]; then
-		echo -e "${C_ERR2}Environment not initialized!${NC} Use '$SCRIPT_ALIAS_CMD --ei' to initialize it."
-	else
-		# TODO: Still some issues
-		#ARG_ENV_ADDR="ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\""
-		cmd="${ARG_ENV_ADDR} python3 ${DAPP_STARTUP_POINT}"
-		echo -e "${C_LBL_RUN}$ $cmd${NC}"
-		run
-		#. .env/bin/activate
-		##$cmd
-		##${ARG_ENV_ADDR} python3 ${DAPP_STARTUP_POINT}
-		#ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 $DAPP_STARTUP_POINT
-		#deactivate
-	fi
+	env_run
 	exit
 fi
 
