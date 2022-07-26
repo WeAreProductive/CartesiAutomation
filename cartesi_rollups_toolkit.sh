@@ -345,14 +345,34 @@ exec_cmd() {
 	fi
 }
 
-dapp_build() {
-	task_title "Building dapp..."
+dapp_build_rollup() {
+	task_title "Building rollup..."
 	if [ $DAPP_ISEXAMPLE = 1 ]; then
 		cmd="docker buildx bake --load"
 	else
+		cmd="docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load"
+	fi
+	exec_cmd "$cmd" "build,rollup"
+}
+
+dapp_build_machine() {
+	task_title "Building machine..."
+	if [ $DAPP_ISEXAMPLE = 1 ]; then
+		cmd="docker buildx bake machine --load"
+	else
 		cmd="docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl machine --load"
 	fi
-	exec_cmd "$cmd" "build"
+	exec_cmd "$cmd" "build,machine"
+}
+
+dapp_build() {
+	task_title "Building dapp (target: $ARG_TARGET_BUILD) ..."
+	if [ $ARG_TARGET_BUILD == "rollup" ] || [ $ARG_TARGET_BUILD == "all" ]; then
+		dapp_build_rollup
+	fi
+	if [ $ARG_TARGET_BUILD == "machine" ] || [ $ARG_TARGET_BUILD == "all" ]; then
+		dapp_build_machine
+	fi
 }
 
 dapp_start() {
@@ -473,6 +493,7 @@ ARG_OP_ENV_INIT=0
 ARG_OP_ENV_RUN=0
 ARG_HINT=0
 ARG_LOG=0
+ARG_TARGET_BUILD=""
 ARG_MODE_ROLLUPS=""
 
 POSITIONAL_ARGS=()
@@ -521,7 +542,12 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-b|"build")
 			ARG_OP_BUILD=1
+			ARG_TARGET_BUILD="$2"
+			if [ $ARG_TARGET_BUILD = "r" ]; then ARG_TARGET_BUILD="rollup"; fi;
+			if [ $ARG_TARGET_BUILD = "m" ]; then ARG_TARGET_BUILD="machine"; fi;
+			if [ $ARG_TARGET_BUILD = "a" ]; then ARG_TARGET_BUILD="all"; fi;
 			shift # past argument
+			shift # past value
 			;;
 		-y|"deploy")
 			ARG_OP_DEPLOY=1
