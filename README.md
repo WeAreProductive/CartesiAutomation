@@ -48,9 +48,9 @@ crt host start --log
 Starts the rollup in host mode and also writes the output to a log file.
 
 ```shell
-crt build --hint
+crt build all --hint
 ```
-Only shows the command used to run the build tasks without actually executing it.
+Shows the commands needed to build all (both rollup and machine) without actually executing them.
 
 ## Arguments
 
@@ -69,7 +69,11 @@ Note: Installation will take effect in newly opened shells.
 *(not yet available) - Remove the alias to this script.*
 
 **-b, build**  
-Builds the dapp.
+Builds the dapp. Build target must be specified after this argument.  
+Build targets are:  
+  'rollup' or 'r' - builds the Cartesi rollup  
+  'machine' or 'm' - builds the Cartesi machine for the current dapp  
+  'all' or 'a' - builds both 'rollup' and 'machine' targets  
 
 **-u, up, start**  
 Starts the rollup in 'host' or 'prod' mode.  
