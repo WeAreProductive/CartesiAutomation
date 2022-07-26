@@ -73,6 +73,9 @@ show_help() {
 	echo -e "\t\t${C_H_EX}$SCRIPT_ALIAS_CMD host stop${NC}"
 	echo -e "\t\t\tStops the rollup from host mode."
 	echo
+	echo -e "\t\t${C_H_EX}$SCRIPT_ALIAS_CMD build all --hint${NC}"
+	echo -e "\t\t\tShows the commands needed to build all (both rollup and machine) without actually executing them."
+	echo
 	echo -e "${C_H_TOPIC}ARGUMENTS${NC}"
 	echo -e "\t${C_H_ARG}-h, --help${NC}"
 	echo -e "\t\tShows this help page."
@@ -89,7 +92,11 @@ show_help() {
 	echo -e "\t\t${C_H_UC}Remove the alias to this script.${NC}"
 	echo
 	echo -e "\t${C_H_ARG}-b, build${NC}"
-	echo -e "\t\tBuilds the dapp."
+	echo -e "\t\tBuilds the dapp. Build target must be specified after this argument."
+	echo -e "\t\tBuild targets are:"
+	echo -e "\t\t\t'rollup' or 'r' - builds the Cartesi rollup"
+	echo -e "\t\t\t'machine' or 'm' - builds the Cartesi machine for the current dapp"
+	echo -e "\t\t\t'all' or 'a' - builds both 'rollup' and 'machine' targets"
 	echo
 	echo -e "\t${C_H_ARG}-u, up, start${NC}"
 	echo -e "\t\tStarts the rollup in 'host' or 'prod' mode."
