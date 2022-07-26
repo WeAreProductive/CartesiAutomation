@@ -2,7 +2,7 @@
 
 shopt -s expand_aliases
 
-SCRIPT_VERSION="0.2"
+SCRIPT_VERSION="0.3"
 SCRIPT_TITLE="Cartesi Rollups ToolKit"
 SCRIPT_FILE="cartesi_rollups_toolkit.sh"
 SCRIPT_ALIAS_CMD="crt"
