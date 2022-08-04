@@ -456,15 +456,22 @@ run() {
 	#deactivate
 }
 
+env_run_raw() {
+	. .env/bin/activate
+	ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 ${DAPP_STARTUP_POINT}
+	deactivate
+}
+
 env_run() {
 	task_title "Starting dapp in environment..."
 	only_python
 	if [ ! -d ".env" ] && [ $ARG_HINT == 0 ]; then
 		echo -e "${C_ERR2}Environment not initialized!${NC} Use '$SCRIPT_ALIAS_CMD --ei' to initialize it."
 	else
+		#env_run_raw
 		ARG_ENV_ADDR="ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\""
-		#exec_cmd "$ARG_ENV_ADDR python3 $DAPP_STARTUP_POINT"
-		exec_cmd "./__run.sh"
+		exec_cmd "$ARG_ENV_ADDR python3 $DAPP_STARTUP_POINT"
+		#exec_cmd "./__run.sh"
 		#exec_cmd ". .env/bin/activate"
 		#exec_cmd "export ${ARG_ENV_ADDR}"
 		#exec_cmd "echo ${ARG_ENV_ADDR}"
