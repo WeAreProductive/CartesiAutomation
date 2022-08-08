@@ -2,7 +2,7 @@
 
 shopt -s expand_aliases
 
-SCRIPT_VERSION="0.3"
+SCRIPT_VERSION="0.4"
 SCRIPT_TITLE="Cartesi Rollups ToolKit"
 SCRIPT_FILE="cartesi_rollups_toolkit.sh"
 SCRIPT_ALIAS_CMD="crt"
@@ -320,8 +320,8 @@ uninstall() {
 # dapp operations
 
 verify_rollups_mode() {
-	if [ "$ARG_MODE_ROLLUPS" != "host" ] && [ "$ARG_MODE_ROLLUPS" != "prod" ]; then
-		echo -e "${C_ERR2}Invalid mode!${NC} Supported modes are '${C_LBL_MODE}host${NC}' and '${C_LBL_MODE}prod${NC}'.${NC}"
+	if [ "$ARG_MODE_ROLLUPS" != "host" ] && [ "$ARG_MODE_ROLLUPS" != "prod" ] && [ "$ARG_MODE_ROLLUPS" != "deploy" ] && [ "$ARG_MODE_ROLLUPS" != "testnet" ]; then
+		echo -e "${C_ERR2}Invalid mode!${NC} Supported modes are '${C_LBL_MODE}host${NC}', '${C_LBL_MODE}prod${NC}', '${C_LBL_MODE}deploy${NC}', '${C_LBL_MODE}testnet${NC}'.${NC}"
 		exit
 	fi
 }
@@ -392,13 +392,25 @@ dapp_start() {
 		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
 			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml up"
 		fi
+		if [ $ARG_MODE_ROLLUPS = "deploy" ]; then
+			cmd="docker compose -f ../deploy-testnet.yml up"
+		fi
+		if [ $ARG_MODE_ROLLUPS = "testnet" ]; then
+			cmd="docker compose -f ../docker-compose-testnet.yml -f ./docker-compose.override.yml up"
+		fi
 	else
 		if [ $ARG_MODE_ROLLUPS = "host" ]; then
 			cmd="docker compose -f ./docker-compose.yml -f ./docker-compose.override.yml -f ./docker-compose-host.yml up"
 		fi
 		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
 			cmd="docker compose up"
-		fi	
+		fi
+		if [ $ARG_MODE_ROLLUPS = "deploy" ]; then
+			cmd="docker compose -f ./deploy-testnet.yml up"
+		fi
+		if [ $ARG_MODE_ROLLUPS = "testnet" ]; then
+			cmd="docker compose -f ./docker-compose-testnet.yml -f ./docker-compose.override.yml up"
+		fi
 	fi
 	exec_cmd "$cmd" "start,$ARG_MODE_ROLLUPS"
 }
@@ -413,17 +425,57 @@ dapp_stop() {
 		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
 			cmd="docker-compose -f ../docker-compose.yml -f ./docker-compose.override.yml down -v"
 		fi
+		if [ $ARG_MODE_ROLLUPS = "deploy" ]; then
+			cmd="docker compose -f ../deploy-testnet.yml down -v"
+		fi
+		if [ $ARG_MODE_ROLLUPS = "testnet" ]; then
+			cmd="docker compose -f ../docker-compose-testnet.yml -f ./docker-compose.override.yml down -v"
+		fi
 	else
 		if [ $ARG_MODE_ROLLUPS = "host" ]; then
 			cmd="docker compose -f ./docker-compose.yml -f ./docker-compose.override.yml -f ./docker-compose-host.yml down -v"
 		fi
 		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
 			cmd="docker compose down -v"
-		fi	
+		fi
+		if [ $ARG_MODE_ROLLUPS = "deploy" ]; then
+			cmd="docker compose -f ./deploy-testnet.yml down -v"
+		fi
+		if [ $ARG_MODE_ROLLUPS = "testnet" ]; then
+			cmd="docker compose -f ./docker-compose-testnet.yml -f ./docker-compose.override.yml down -v"
+		fi
 	fi
 	exec_cmd "$cmd" "stop,$ARG_MODE_ROLLUPS"
 }
 
+# deployment profile
+
+dp_show() {
+	echo -e "NETWORK=${C_LBL_NAME}$NETWORK${NC}"
+	echo -e "RPC_URL=${C_LBL_NAME}$RPC_URL${NC}"
+	echo -e "WSS_URL=${C_LBL_NAME}$WSS_URL${NC}"
+	echo -e "CHAIN_ID=${C_LBL_NAME}$CHAIN_ID${NC}"
+	echo -e "DAPP_NAME=${C_LBL_NAME}$DAPP_NAME${NC}"
+	if [ ! -z "$MNEMONIC" ]; then
+		echo -e "MNEMONIC=${C_LBL_NAME}******${NC}"
+	else
+		echo -e "MNEMONIC="
+	fi
+}
+
+dp_load() {
+	if [ ! -f $ARG_DP_FILE ]; then
+		echo -e "${C_ERR2}Error: File \"$ARG_DP_FILE\" does not exist!${NC}"
+		exit
+	fi
+	#source "$ARG_DP_FILE"
+	#$ARG_DP_FILE
+	dp_show
+}
+
+# dp_create() {
+
+# }
 
 # virtual env tasks
 only_python() {
@@ -509,6 +561,10 @@ ARG_HINT=0
 ARG_LOG=0
 ARG_TARGET_BUILD=""
 ARG_MODE_ROLLUPS=""
+ARG_DP_SHOW=0
+ARG_DP_LOAD=0
+ARG_DP_CREATE=0
+ARG_DP_FILE=""
 
 POSITIONAL_ARGS=()
 
@@ -542,6 +598,8 @@ while [[ $# -gt 0 ]]; do
 			ARG_MODE_ROLLUPS="$2"
 			if [ $ARG_MODE_ROLLUPS = "h" ]; then ARG_MODE_ROLLUPS="host"; fi;
 			if [ $ARG_MODE_ROLLUPS = "p" ]; then ARG_MODE_ROLLUPS="prod"; fi;
+			if [ $ARG_MODE_ROLLUPS = "d" ]; then ARG_MODE_ROLLUPS="deploy"; fi;
+			if [ $ARG_MODE_ROLLUPS = "t" ]; then ARG_MODE_ROLLUPS="testnet"; fi;
 			if [ $ARG_MODE_ROLLUPS = "production" ]; then ARG_MODE_ROLLUPS="prod"; fi;
 			shift # past argument
 			shift # past value
@@ -552,6 +610,14 @@ while [[ $# -gt 0 ]]; do
 			;;
 		"host")
 			ARG_MODE_ROLLUPS="host"
+			shift # past value
+			;;
+		"deploy")
+			ARG_MODE_ROLLUPS="deploy"
+			shift # past value
+			;;
+		"testnet")
+			ARG_MODE_ROLLUPS="testnet"
 			shift # past value
 			;;
 		-b|"build")
@@ -596,6 +662,20 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-l|--log)
 			ARG_LOG=1
+			shift # past argument
+			;;
+		"dp-show"|"dp-s")
+			ARG_DP_SHOW=1
+			shift # past argument
+			;;
+		"dp-load"|"dp-l")
+			ARG_DP_LOAD=1
+			ARG_DP_FILE=$2
+			shift # past argument
+			shift # past value
+			;;
+		"dp-create"|"dp-c")
+			ARG_DP_CREATE=1
 			shift # past argument
 			;;
 		-*|--*)
@@ -680,5 +760,24 @@ fi
 # Operation: Stop dapp (example and custom, host and prod modes)
 if [ $ARG_OP_STOP = 1 ]; then
 	dapp_stop
+	exit
+fi
+
+
+# Deployment Profile - Show
+if [ $ARG_DP_SHOW = 1 ]; then
+	dp_show
+	exit
+fi
+
+# Deployment Profile - Load
+if [ $ARG_DP_LOAD = 1 ]; then
+	dp_load
+	exit
+fi
+
+# Deployment Profile - Create
+if [ $ARG_DP_CREATE = 1 ]; then
+	dp_create
 	exit
 fi
