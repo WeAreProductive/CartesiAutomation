@@ -305,7 +305,7 @@ is_installed() {
 
 install() {
 	if [ $(is_installed) = "0" ]; then
-		echo alias $SCRIPT_ALIAS_CMD="$WD/$SCRIPT_FILE" >> ~/.bashrc
+		echo alias $SCRIPT_ALIAS_CMD="'$WD/$SCRIPT_FILE'" >> ~/.bashrc
 		# TODO: add to current terminal
 		#alias $SCRIPT_ALIAS_CMD="$WD/$SCRIPT_FILE"
 		#alias
