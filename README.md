@@ -89,12 +89,22 @@ Also works if both 'stop' and 'start' arguments are provided.
 Note: The mode needs to be specified using the -m argument.
 
 **-m, --mode**  
-Specifies in what mode the dapp will run. Supported modes are 'host' and 'prod'.
+Specifies in what mode the dapp will run. Supported modes are 'host', 'prod', 'deploy', 'testnet'
 
 **host**  
-Same as '-m host'  
+Specifies that the docker images will be run as for 'host' mode.  
+Same as '-m host'
+
+**deploy**  
+Specifies that the docker images will be run as step of the deployment process on a test network.  
+Same as '-m deploy'
+
+**testnet**  
+Specifies that the docker images will be run for already deployed dapp on a test network.  
+Same as '-m testnet'
 
 **prod, production**  
+Specifies that the docker images will be run as for 'prod' mode.  
 Same as '-m prod'
 
 ~~**-c, create**~~  
@@ -111,6 +121,9 @@ Works with: build, start, stop, restart, env-init
 Creates log file with the ouput of the executed task. Log files are located in directory /logs.  
 Works with: build, start, stop, restart  
 Note: The executed command is piped to 'tee', so it outputs both on the screen and in a log file.
+
+**dp-show**  
+Shows the environment variables required for deployment and running a testnet.  
 
 **--ei, env-init**  
 Initializes host mode for the dapp by creating virtual environment and installing the required libraries.  

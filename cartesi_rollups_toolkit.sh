@@ -112,19 +112,26 @@ show_help() {
 	echo -e "\t\t${C_H_NOTE}The mode needs to be specified using the -m argument.$NC"
 	echo
 	echo -e "\t${C_H_ARG}-m, --mode${NC}"
-	echo -e "\t\tSpecifies in what mode the dapp will run. Supported modes are 'host' and 'prod'."
+	echo -e "\t\tSpecifies in what mode the dapp will run. Supported modes are 'host', 'prod', 'deploy', 'testnet'."
 	echo
 	echo -e "\t${C_H_ARG}host${NC}"
+	echo -e "\t\tSpecifies that the docker images will be run as for 'host' mode."
 	echo -e "\t\tSame as '-m host'"
 	echo
 	echo -e "\t${C_H_ARG}prod, production${NC}"
+	echo -e "\t\tSpecifies that the docker images will be run as for 'prod' mode."
 	echo -e "\t\tSame as '-m prod'"
+	echo
+	echo -e "\t${C_H_ARG}deploy${NC}"
+	echo -e "\t\tSpecifies that the docker images will be run as step of the deployment process on a test network."
+	echo -e "\t\tSame as '-m deploy'."
+	echo
+	echo -e "\t${C_H_ARG}testnet${NC}"
+	echo -e "\t\tSpecifies that the docker images will be run for already deployed dapp on a test network."
+	echo -e "\t\tSame as '-m testnet'."
 	echo
 	echo -e "\t${C_H_ARG}-c, create${NC}"
 	echo -e "\t\t${C_H_UC}Creates new dapp at current directory.${NC}"
-	echo
-	echo -e "\t${C_H_ARG}-y, deploy${NC}"
-	echo -e "\t\t${C_H_UC}Deploys the dapp.${NC}"
 	echo
 	echo -e "\t${C_H_ARG}--hint${NC}"
 	echo -e "\t\tOnly shows command used to execute specified task without actually executing it."
@@ -134,6 +141,9 @@ show_help() {
 	echo -e "\t\tCreates log file with the ouput of the executed task. Log files are located in directory /logs."
 	echo -e "\t\tWorks with: build, start, stop, restart"
 	echo -e "\t\tNote: The executed command is piped to 'tee', so it outputs both on the screen and in a log file."
+	echo
+	echo -e "\t${C_H_ARG}dp-show${NC}"
+	echo -e "\t\tShows the environment variables required for deployment and running a testnet."
 	echo
 	echo -e "\t${C_H_ARG}--ei, env-init${NC}"
 	echo -e "\t\tInitializes host mode for the dapp by creating virtual environment and installing the required libraries."
