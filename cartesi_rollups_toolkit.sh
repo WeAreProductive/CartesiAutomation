@@ -137,6 +137,9 @@ show_help() {
 	echo -e "\t\tOnly shows command used to execute specified task without actually executing it."
 	echo -e "\t\tWorks with: build, start, stop, restart, env-init"
 	echo
+	echo -e "\t${C_H_ARG}--bg${NC}"
+	echo -e "\t\tStarts docker in detached mode (background) so no opened terminal is required to keep it running."
+	echo
 	echo -e "\t${C_H_ARG}-l, --log${NC}"
 	echo -e "\t\tCreates log file with the ouput of the executed task. Log files are located in directory /logs."
 	echo -e "\t\tWorks with: build, start, stop, restart"

@@ -117,6 +117,9 @@ Same as '-m prod'
 Only shows command used to execute specified task without actually executing it.  
 Works with: build, start, stop, restart, env-init
 
+**--bg**  
+Starts docker in detached mode (background) so no opened terminal is required to keep it running.
+
 **-l, --log**  
 Creates log file with the ouput of the executed task. Log files are located in directory /logs.  
 Works with: build, start, stop, restart  
