@@ -456,12 +456,15 @@ dapp_build() {
 dapp_start() {
 	verify_rollups_mode
 	task_title "Starting dapp in ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode..."
+	
+	if [ $ARG_DOCKER_DETACHED == 1 ]; then _DD_MODE=" -d"; else _DD_MODE=""; fi;
+	echo "_DD_MODE=$_DD_MODE"
 	if [ $DAPP_ISEXAMPLE = 1 ]; then
 		if [ $ARG_MODE_ROLLUPS = "host" ]; then
-			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml -f ../docker-compose-host.yml up"
+			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml -f ../docker-compose-host.yml up$_DD_MODE"
 		fi
 		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
-			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml up"
+			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml up$_DD_MODE"
 		fi
 		if [ $ARG_MODE_ROLLUPS = "deploy" ]; then
 			dp_check
@@ -469,14 +472,14 @@ dapp_start() {
 		fi
 		if [ $ARG_MODE_ROLLUPS = "testnet" ]; then
 			dp_check
-			cmd="docker compose -f ../docker-compose-testnet.yml -f ./docker-compose.override.yml up"
+			cmd="docker compose -f ../docker-compose-testnet.yml -f ./docker-compose.override.yml up$_DD_MODE"
 		fi
 	else
 		if [ $ARG_MODE_ROLLUPS = "host" ]; then
-			cmd="docker compose -f ./docker-compose.yml -f ./docker-compose.override.yml -f ./docker-compose-host.yml up"
+			cmd="docker compose -f ./docker-compose.yml -f ./docker-compose.override.yml -f ./docker-compose-host.yml up$_DD_MODE"
 		fi
 		if [ $ARG_MODE_ROLLUPS = "prod" ]; then
-			cmd="docker compose up"
+			cmd="docker compose up$_DD_MODE"
 		fi
 		if [ $ARG_MODE_ROLLUPS = "deploy" ]; then
 			dp_check
@@ -484,7 +487,7 @@ dapp_start() {
 		fi
 		if [ $ARG_MODE_ROLLUPS = "testnet" ]; then
 			dp_check
-			cmd="docker compose -f ./docker-compose-testnet.yml -f ./docker-compose.override.yml up"
+			cmd="docker compose -f ./docker-compose-testnet.yml -f ./docker-compose.override.yml up$_DD_MODE"
 		fi
 	fi
 	exec_cmd "$cmd" "start,$ARG_MODE_ROLLUPS"
@@ -611,6 +614,7 @@ ARG_HINT=0
 ARG_LOG=0
 ARG_TARGET_BUILD=""
 ARG_MODE_ROLLUPS=""
+ARG_DOCKER_DETACHED=0
 ARG_DP_SHOW=0
 ARG_DP_LOAD=0
 ARG_DP_CREATE=0
@@ -669,6 +673,10 @@ while [[ $# -gt 0 ]]; do
 		"testnet")
 			ARG_MODE_ROLLUPS="testnet"
 			shift # past value
+			;;
+		--bg)
+			ARG_DOCKER_DETACHED=1
+			shift # past argument
 			;;
 		-b|"build")
 			ARG_OP_BUILD=1
