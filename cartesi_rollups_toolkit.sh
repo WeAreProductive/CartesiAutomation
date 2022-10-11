@@ -111,6 +111,9 @@ show_help() {
 	echo -e "\t\tAlso works if both 'stop' and 'start' arguments are provided."
 	echo -e "\t\t${C_H_NOTE}The mode needs to be specified using the -m argument.$NC"
 	echo
+	echo -e "\t${C_H_ARG}-g, go${NC}"
+	echo -e "\t\tSame as 'start' then after user interrupt (Ctr+C) automatically calls 'stop'."
+	echo
 	echo -e "\t${C_H_ARG}-m, --mode${NC}"
 	echo -e "\t\tSpecifies in what mode the dapp will run. Supported modes are 'host', 'prod', 'deploy', 'testnet'."
 	echo
