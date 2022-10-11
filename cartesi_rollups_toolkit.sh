@@ -615,6 +615,7 @@ ARG_OP_BUILD=0
 ARG_OP_DEPLOY=0
 ARG_OP_START=0
 ARG_OP_STOP=0
+ARG_OP_STARTSTOP=0
 ARG_OP_RESTART=0
 ARG_OP_ENV_INIT=0
 ARG_OP_ENV_RUN=0
@@ -712,6 +713,10 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-r|"restart")
 			ARG_OP_RESTART=1
+			shift # past argument
+			;;
+		-g|"go")
+			ARG_OP_STARTSTOP=1
 			shift # past argument
 			;;
 		--ei|"env-init")
@@ -825,6 +830,13 @@ fi
 
 # Operation: Stop dapp (example and custom, host and prod modes)
 if [ $ARG_OP_STOP = 1 ]; then
+	dapp_stop
+	exit
+fi
+
+# Operation: Start, then after user interrupt (Ctr+C) automatically stop
+if [ $ARG_OP_STARTSTOP = 1 ]; then
+	dapp_start
 	dapp_stop
 	exit
 fi
