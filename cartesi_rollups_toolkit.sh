@@ -461,7 +461,6 @@ dapp_start() {
 	task_title "Starting dapp in ${C_LBL_MODE}$ARG_MODE_ROLLUPS${C_LBL_CMD} mode..."
 	
 	if [ $ARG_DOCKER_DETACHED == 1 ]; then _DD_MODE=" -d"; else _DD_MODE=""; fi;
-	echo "_DD_MODE=$_DD_MODE"
 	if [ $DAPP_ISEXAMPLE = 1 ]; then
 		if [ $ARG_MODE_ROLLUPS = "host" ]; then
 			cmd="docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml -f ../docker-compose-host.yml up$_DD_MODE"
@@ -576,28 +575,34 @@ env_run() {
 	if [ ! -d ".env" ] && [ $ARG_HINT == 0 ]; then
 		echo -e "${C_ERR2}Environment not initialized!${NC} Use '$SCRIPT_ALIAS_CMD --ei' to initialize it."
 	else
-		#env_run_raw
-		ARG_ENV_ADDR="ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\""
-		exec_cmd "$ARG_ENV_ADDR python3 $DAPP_STARTUP_POINT"
-		#exec_cmd "./__run.sh"
-		#exec_cmd ". .env/bin/activate"
-		#exec_cmd "export ${ARG_ENV_ADDR}"
-		#exec_cmd "echo ${ARG_ENV_ADDR}"
-		#exec_cmd "python3 ${DAPP_STARTUP_POINT}"
-		#exec_cmd "deactivate"
+		if [ $ARG_HINT == 0 ]; then
+			#env_run_raw
+			ARG_ENV_ADDR="ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\""
+			exec_cmd "$ARG_ENV_ADDR python3 $DAPP_STARTUP_POINT"
+			#exec_cmd "./__run.sh"
+			#exec_cmd ". .env/bin/activate"
+			#exec_cmd "export ${ARG_ENV_ADDR}"
+			#exec_cmd "echo ${ARG_ENV_ADDR}"
+			#exec_cmd "python3 ${DAPP_STARTUP_POINT}"
+			#exec_cmd "deactivate"
 
-		# TODO: Still some issues
-		#ARG_ENV_ADDR="ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\""
+			# TODO: Still some issues
+			#ARG_ENV_ADDR="ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\""
 
-		#cmd="${ARG_ENV_ADDR} python3 ${DAPP_STARTUP_POINT}"
-		#echo -e "${C_LBL_RUN}$ $cmd${NC}"
-		#run
+			#cmd="${ARG_ENV_ADDR} python3 ${DAPP_STARTUP_POINT}"
+			#echo -e "${C_LBL_RUN}$ $cmd${NC}"
+			#run
 
-		#. .env/bin/activate
-		##$cmd
-		##${ARG_ENV_ADDR} python3 ${DAPP_STARTUP_POINT}
-		#ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 $DAPP_STARTUP_POINT
-		#deactivate
+			#. .env/bin/activate
+			##$cmd
+			##${ARG_ENV_ADDR} python3 ${DAPP_STARTUP_POINT}
+			#ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 $DAPP_STARTUP_POINT
+			#deactivate
+		else
+			echo -e "${C_LBL_RUN}$ . .env/bin/activate${NC}"
+			echo -e "${C_LBL_RUN}$ $ARG_ENV_ADDR python3 $DAPP_STARTUP_POINT${NC}"
+			echo -e "${C_LBL_RUN}$ deactivate${NC}"
+		fi
 	fi
 }
 
